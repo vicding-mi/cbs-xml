@@ -39,7 +39,7 @@ def publish_dv(dv_ids, ds_ids):
         assert 300 > resp.status_code > 199, f'Error: {resp.status_code}, {resp.text}'
 
 
-def __main__(dv='liss_dc'):
+def __main__(dv='cbs_xml'):
     find_children(dv)
 
     print(f'len of all ds {len(all_dataset_ids)}')
