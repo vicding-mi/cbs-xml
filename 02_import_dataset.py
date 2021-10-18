@@ -242,6 +242,7 @@ def __main__():
 
     counter = 1
     mapping_list = load_mapping_file(cbs_mapping_file)
+    print('mapping file loaded')
     for root, dirs, files in os.walk(input_path):
         for name in files:
             full_input_file = join(root, name)
@@ -264,4 +265,5 @@ def __main__():
 
 
 if __name__ == '__main__':
+    print('starting...')
     __main__()

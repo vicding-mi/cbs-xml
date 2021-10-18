@@ -17,7 +17,7 @@ dataset_ids = []
 def main(hosting_dv='king', delete_self=False, unpublished=False):
     print("Finding dataverses and datasets to destroy...")
     if unpublished:
-        find_unpublished_ds_in_dv()
+        find_unpublished_ds_in_dv(hosting_dv)
     else:
         find_children(hosting_dv)
         dataset_ids.sort(reverse=True)
@@ -25,18 +25,18 @@ def main(hosting_dv='king', delete_self=False, unpublished=False):
             print('Deleting dataset id ' + str(dataset_id))
             print('Preemptively deleting dataset locks for dataset id ' + str(dataset_id))
             resp = requests.delete(base_url + '/api/datasets/' + str(dataset_id) + '/locks?key=' + api_token)
-            print(resp)
+            print(f'For dataset {dataset_id}, status: {resp.status_code}: {resp.text}')
             resp = requests.delete(base_url + '/api/datasets/' + str(dataset_id) + '/destroy?key=' + api_token)
-            print(resp)
+            print(f'For dataset {dataset_id}, status: {resp.status_code}: {resp.text}')
         dataverse_ids.sort(reverse=True)
         for dataverse_id in dataverse_ids:
             print('Deleting dataverse id ' + str(dataverse_id))
             resp = api.delete_dataverse(dataverse_id)
-            print(resp)
+            print(f'For sub dataverse {dataverse_id}, status: {resp.status_code}: {resp.text}')
         if delete_self:
             print('Deleting current hosting dataverse ' + str(hosting_dv))
             resp = api.delete_dataverse(hosting_dv)
-            print(resp)
+            print(f'For main dataverse {hosting_dv}, status: {resp.status_code}: {resp.text}')
         print("Done.")
 
 
@@ -54,10 +54,11 @@ def find_children(dataverse_database_id):
             dataset_ids.append(dvid)
 
 
-def find_unpublished_ds_in_dv():
-    query_str = '/search?q=publicationStatus:Unpublished&type=dataset&dataverse=easy_xml'
+def find_unpublished_ds_in_dv(hosting_dv):
+    query_str = f'/search?q=publicationStatus:Unpublished&type=dataset&dataverse={hosting_dv}'
     params = {}
     resp = api.get_request(query_str, params=params, auth=True)
+    exit(resp.json()['data'])
     while len(resp.json()['data']['items']) > 0:
         for dvobject in resp.json()['data']['items']:
             dvid = dvobject['global_id']
@@ -65,9 +66,9 @@ def find_unpublished_ds_in_dv():
             assert 300 > resp.status_code > 199, 'cannot find ds'
             dvid = resp.json()['data']['id']
             resp = requests.delete(base_url + '/api/datasets/' + str(dvid) + '/locks?key=' + api_token)
-            print(resp)
+            print(f'Delete dataset {dvid} lock, status: {resp.status_code}: {resp.text}')
             resp = requests.delete(base_url + '/api/datasets/' + str(dvid) + '/destroy?key=' + api_token)
-            print(resp)
+            print(f'Delete dataset {dvid}, status: {resp.status_code}: {resp.text}')
         resp = api.get_request(query_str, params=params, auth=True)
 
 
