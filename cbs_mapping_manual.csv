@@ -9,7 +9,7 @@
 "Microdata@cbs.nl",citation,datasetContact,1,datasetContactEmail,0,primitive
 "Social Sciences",citation,"",0,subject,1,controlledVocabulary
 "/Dataontwerpversies/Versie/Dataontwerp/Trefwoorden/Trefwoord;/Dataontwerpversies/Versie/Dataontwerp/Dataontwerpgroeppad",citation,keyword,1,keywordValue,0,primitive
-/Dataontwerpversies/Versie/Dataontwerp/Themas/Thema,citation,topicClassification,1,topicClassificationValue,0,primitive
+/Dataontwerpversies/Versie/Dataontwerp/Themas/Thema,citation,topicClassification,1,topicClassValue,0,primitive
 "Centraal Bureau voor Statistiek",citation,distributor,1,distributorName,0,primitive
 "/Dataontwerpversies/Versie/Dataontwerp/GeldigVanaf",citation,"",0,distributionDate,0,primitive
 "/Dataontwerpversies/Versie/Dataontwerp/GeldigVanaf",citation,"",0,publicationDate,0,primitive
