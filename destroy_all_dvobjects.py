@@ -58,7 +58,7 @@ def find_unpublished_ds_in_dv(hosting_dv):
     query_str = f'/search?q=publicationStatus:Unpublished&type=dataset&dataverse={hosting_dv}'
     params = {}
     resp = api.get_request(query_str, params=params, auth=True)
-    exit(resp.json()['data'])
+    # exit(resp.json()['data'])
     while len(resp.json()['data']['items']) > 0:
         for dvobject in resp.json()['data']['items']:
             dvid = dvobject['global_id']
