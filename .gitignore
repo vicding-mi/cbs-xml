@@ -16,6 +16,8 @@ dvconfig.py
 
 cbs_all
 cbs_all/*
+cbs_mapping.csv
+VariablesMetadata.csv
 
 *.xsd
 
