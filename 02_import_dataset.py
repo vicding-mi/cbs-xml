@@ -17,12 +17,14 @@ cbs_mapping_file = dvconfig.cbs_mapping_file
 
 extra_fields_parent: str = "/Dataontwerpversies/Versie/Dataontwerp/Contextvariabelen/Contextvariabele"
 extra_fields = [
-    "VerkorteSchrijfwijzeNaamVariabele",
-    "LabelVanDeVariabele",
-    "Variabele/Definitie",
-    "ToelichtingBijDeDefinitie",
-    "ToelichtingBijHetGebruik",
-    "Datatype"
+    ["Name", "VerkorteSchrijfwijzeNaamVariabele"],
+    ["ID", "Variabele/Id"],
+    ["Description", "LabelVanDeVariabele"],
+    ["Definition", "Variabele/Definitie"],
+    ["Explanation of the definition", "ToelichtingBijDeDefinitie"],
+    ["Explanation for usage", "ToelichtingBijHetGebruik"],
+    ["Data type", "Datatype"],
+    ["Key variable", "Sleutelvariabele"]
 ]
 
 ns = {
@@ -289,9 +291,9 @@ def get_extra_fields(dom) -> list:
     for row in all_elements:
         for ef in extra_fields:
             print(ef)
-            elements = row.xpath(ef)
+            elements = row.xpath(ef[1])
             for e in elements:
-                result.append([e.tag, e.text])
+                result.append([ef[0], e.text])
         result.append(["", ""])
     return result
 
