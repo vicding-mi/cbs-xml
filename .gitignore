@@ -19,6 +19,9 @@ cbs_all/*
 cbs_mapping.csv
 VariablesMetadata.csv
 
+csv_output
+csv_output/*
+
 *.xsd
 
 

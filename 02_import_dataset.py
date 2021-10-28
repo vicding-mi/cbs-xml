@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 
 from pyDataverse.exceptions import ApiAuthorizationError
 from pyDataverse.api import Api
@@ -15,6 +16,7 @@ dataverse_id = dvconfig.dataverse_name
 input_path = dvconfig.cbs_data_path
 cbs_mapping_file = dvconfig.cbs_mapping_file
 
+filename_padding_xpath = "/Dataontwerpversies/Versie/Dataontwerp/VerkorteSchrijfwijzeNaamDataontwerp"
 extra_fields_parent: str = "/Dataontwerpversies/Versie/Dataontwerp/Contextvariabelen/Contextvariabele"
 extra_fields = [
     ["Name", "VerkorteSchrijfwijzeNaamVariabele"],
@@ -286,6 +288,7 @@ def put_request_semantic(query_str, metadata=None, auth=False, params=None):
 
 
 def get_extra_fields(dom) -> list:
+    """get specific variable information from dom"""
     result: list = []
     all_elements = dom.xpath(extra_fields_parent)
     for row in all_elements:
@@ -305,6 +308,14 @@ def create_temp_csv(extra_field_value, cwd, filename_padding: str = 'VariablesMe
         csv_writer = csv.writer(csv_file, delimiter=",", quoting=csv.QUOTE_ALL)
         csv_writer.writerows(extra_field_value)
         return full_output_filename
+
+
+def get_alternative_id(dom, xpath_str) -> str:
+    """get alternative id from dom, return str"""
+    result = dom.xpath(xpath_str)
+    result = result[0].text if len(result) > 0 else ""
+    result = re.sub(r'[^A-Za-z0-9]+', '', result)
+    return result
 
 
 def main() -> None:
@@ -339,7 +350,7 @@ def main() -> None:
                 resp = api.create_dataset(dataverse_id, cbs_json)
                 if not 300 > resp.status_code > 199:
                     raise Exception('error occurred while creating dataset', resp.text, cbs_json)
-                # get pid and ds_id
+                """get pid and ds_id"""
                 pid = resp.json()["data"]["persistentId"]
                 pid = pid.split('/')[1]
                 ds_id = resp.json()["data"]["id"]
@@ -353,8 +364,10 @@ def main() -> None:
                 # TODO: upload file of variables
                 """get data from xml according to the given xpath list: extra_field"""
                 extra_field_value: list = get_extra_fields(dom)
+                """get alternative id and use it as filename"""
+                filename_padding = f'VariableMetadata_{get_alternative_id(dom, filename_padding_xpath)}'
                 """create upload file and get the filename"""
-                csv_filename: str = create_temp_csv(extra_field_value, cwd)
+                csv_filename: str = create_temp_csv(extra_field_value, cwd, filename_padding=filename_padding)
                 """upload the file using API"""
                 padded_pid = f'uuid:10.5072/{pid}'
                 resp = api.upload_file(padded_pid, csv_filename)
