@@ -2,6 +2,7 @@ import csv
 import os
 import re
 
+import pandas as pd
 from pyDataverse.exceptions import ApiAuthorizationError
 from pyDataverse.api import Api
 from requests import put
@@ -289,15 +290,14 @@ def put_request_semantic(query_str, metadata=None, auth=False, params=None):
 
 def get_extra_fields(dom) -> list:
     """get specific variable information from dom"""
+    # TODO: check how Dataverse indexes files and how variables are recognised. First row of CSV is indexed and searchable?
     result: list = []
     all_elements = dom.xpath(extra_fields_parent)
+    header = [e[0] for e in extra_fields]
+    result.append(header)
     for row in all_elements:
-        for ef in extra_fields:
-            print(ef)
-            elements = row.xpath(ef[1])
-            for e in elements:
-                result.append([ef[0], e.text])
-        result.append(["", ""])
+        # print([row.xpath(ef[1])[0].text for ef in extra_fields])
+        result.append([row.xpath(ef[1])[0].text for ef in extra_fields])
     return result
 
 
@@ -336,7 +336,7 @@ def main() -> None:
     for root, dirs, files in os.walk(input_path):
         for name in files:
             full_input_file = os.path.join(root, name)
-            if full_input_file.endswith('dsc'):
+            if full_input_file.endswith('xml'):
                 print(f'{counter} working on {full_input_file}')
                 counter += 1
                 dom = et.parse(full_input_file)
@@ -368,6 +368,10 @@ def main() -> None:
                 filename_padding = f'VariableMetadata_{get_alternative_id(dom, filename_padding_xpath)}'
                 """create upload file and get the filename"""
                 csv_filename: str = create_temp_csv(extra_field_value, cwd, filename_padding=filename_padding)
+                """transpose the csv"""
+                df = pd.read_csv(csv_filename)
+                df_transposed = df.T
+                df_transposed.to_csv(csv_filename, header=None, index=False)
                 """upload the file using API"""
                 padded_pid = f'uuid:10.5072/{pid}'
                 resp = api.upload_file(padded_pid, csv_filename)
