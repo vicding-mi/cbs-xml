@@ -60,17 +60,20 @@ def main():
     print(f'There are {len(results)} files having emails')
 
     # checking for links
-    links_pattern = re.compile(r'(http|ftp|https):\/\/([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?')
+    links_pattern = re.compile(r'(http|ftp|https)(://)([\w\-_]+(?:(?:\.[\w\-_]+)+))([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?')
     results = pattern_in_all_files(links_pattern)
     counter = 0
     for r in results:
         if len(r) > 4:
             counter += 1
-            print(r[3:])
+            row = []
+            for i in r[3:-1]:
+                row.append(''.join(i))
+            print(f'"{row}","{r[-1]}"')
     print(f'There are {counter} files having links')
 
     # checking for phone numbers
-    phone_pattern = re.compile(r'(\d{3})\D*(\d{3})\D*(\d{4})\D*(\d*)$')
+    phone_pattern = re.compile(r'^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$')
     results = pattern_in_all_files(phone_pattern)
     for r in results:
         print(r)
