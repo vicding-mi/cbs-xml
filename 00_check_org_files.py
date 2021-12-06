@@ -82,5 +82,11 @@ def main():
 
 if __name__ == '__main__':
     print('starting...')
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('check', help='Shall we check the files? Default to Yes.', type=bool, default=True)
+    parser.add_argument('clean_email', help='Shall we remove the found email address(es) from the files? Default to No. ', type=bool, default=False)
+    parser.add_argument('clean_link', help='Shall we remove the found link(s) from the files? Default to No. ', type=bool, default=False)
+    parser.add_argument('clean_email', help='Shall we remove the found email address from the files? Default to No. ', type=bool, default=False)
     main()
     print('...done')
