@@ -336,7 +336,7 @@ def main() -> None:
     for root, dirs, files in os.walk(input_path):
         for name in files:
             full_input_file = os.path.join(root, name)
-            if full_input_file.endswith('xml'):
+            if full_input_file.endswith('dsc'):
                 print(f'{counter} working on {full_input_file}')
                 counter += 1
                 dom = et.parse(full_input_file)
