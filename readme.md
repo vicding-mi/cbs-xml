@@ -3,8 +3,12 @@
 This repository contains scripts to process CBS metadata for ingesting into Dataverse.
 Please use `Python 3.7` for best compatibility. Newer versions should work, but not tested. 
 
-### Sample configuration
+### Sample configuration file
+Copy/rename `dvconfig-sample.py` to `dvconfig.py`. Please see the content below and modify according to your needs. 
 ```python
+base_url = 'https://portal.odissei.nl'
+api_token = 'xxx-xxxxxxxxx-xxxx-xxxxxxx'
+
 dataverse_name = 'dataverse_or_subdataverse_name'
 cbs_data_path = '/fullpath/to/metadata'
 cbs_mapping_file = '/fullpath/to/mapping.csv'
@@ -15,7 +19,7 @@ cbs_mapping_file = '/fullpath/to/mapping.csv'
  * 03 publish ds `python 03_publish_ds.py`
 
 ### Work flow listed below: 
- * 01/ Flatten its XSD in order to get a mapping file, the mapping file will be CSV. The generated file contains full path for each field. The mapping information could be filled by data manager.
+ * Step 1) Flatten its XSD in order to get a mapping file, the mapping file will be CSV. The generated file contains full path for each field. The mapping information could be filled by data manager.
    * the first column is the full XPATH of each xsd element 
    * the second column is the block name
    * the third column is the parent field, if available, otherwise should be ""
@@ -23,8 +27,17 @@ cbs_mapping_file = '/fullpath/to/mapping.csv'
    * the fifth column is the field name
    * the sixth column is the multiple value allowed indicator of field
    * the seventh column is the type of the field ('primitive', 'controlledVocabulary')
- * 02/ Convert XSD file, according to the mapping, to JSON
+ * Step 2) Convert XSD file, according to the mapping, to JSON
    * No JSON file will be generated on the disk, only json structure on the fly
- * 02/ Import JSON into Dataverse by using old API or the new semantic API
-   * This step is combined with the previous step
- * 03/ Publish after checking
+ * Step 3) Import JSON into Dataverse 
+ ```shell
+python 02_import_dataset.py 
+```
+ * Step 4) Publish after checking
+```shell
+python 03_publish_ds.py
+```
+###NOTES
+* Step 1 and 2 should be run only once, the generated then curated mapping CSV shall be used multiple times.
+* Copy/rename dvconfig-sample.py to dvconfig.py, and adjust the parameters accordingly
+
